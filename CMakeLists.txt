@@ -20,13 +20,6 @@ add_library(MachMessagesCPP STATIC MachMessages/MachMessage.mm MachMessages/Mach
 target_link_libraries(
         ${PROJECT_NAME}
         "-framework Foundation"
-        "-framework IOKit"
-        "-framework CoreFoundation"
-        "-framework UIKit"
-        "-framework MobileCoreServices"
-        "-framework ImageIO"
-        "-framework AVFoundation"
         "-framework CoreMedia"
-        "-framework Security"
         "-framework VideoToolBox"
         )
