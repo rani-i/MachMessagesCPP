@@ -127,7 +127,12 @@ mach_msg_return_t MachMessage::recvMessage(MachConnection &machConnection)
             mach_msg_header->msgh_size, mach_msg_header->msgh_local_port, 1000*3, MACH_PORT_NULL);
 
     mach_msg_header->msgh_size = receivedSize;
-    MACH_LOG("Mach message receive");
+    MACH_LOG("Mach message received");
+
+    if(ret == MACH_RCV_TIMED_OUT)
+    {
+        throw MachMessageRecvTimeout();
+    }
 
     this->parseMessageReceived();
     return ret;
