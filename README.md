@@ -7,3 +7,5 @@ target_link_libraries(${PROJECT_NAME}
         MachMessagesCPP
         ...
         ..)
+        
+You can see test on how to use the library

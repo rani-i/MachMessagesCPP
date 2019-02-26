@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD 17)
 #Use for debug logs
 #add_definitions(-DDEBUG)
 
-add_library(MachMessagesCPP STATIC MachMessages/MachMessage.mm MachMessages/MachMessage.h MachMessages/MachPort.mm MachMessages/MachPort.h MachMessages/MachMessageComplex.mm MachMessages/MachMessageComplex.h MachMessages/MachMessageData.mm MachMessages/MachMessageData.h MachMessages/MachMessageDescriptor.mm MachMessages/MachMessageDescriptor.h MachMessages/Logger.h MachMessages/MachConnection.mm MachMessages/MachConnection.h MachMessages/MachExceptions.h MachServices/MachServiceBase.mm MachServices/MachServiceBase.h)
+add_library(MachMessagesCPP STATIC MachMessages/MachMessage.mm MachMessages/MachMessage.h MachMessages/MachPort.mm MachMessages/MachPort.h MachMessages/MachMessageComplex.mm MachMessages/MachMessageComplex.h MachMessages/MachMessageData.mm MachMessages/MachMessageData.h MachMessages/MachMessageDescriptor.mm MachMessages/MachMessageDescriptor.h MachMessages/Logger.h MachMessages/MachConnection.mm MachMessages/MachConnection.h MachMessages/MachExceptions.h MachServices/MachServiceBase.mm MachServices/MachServiceBase.h test/MachService.mm test/MachService.h)
 target_link_libraries(
         ${PROJECT_NAME}
         "-framework Foundation"
