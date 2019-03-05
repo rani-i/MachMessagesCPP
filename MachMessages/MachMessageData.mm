@@ -11,6 +11,13 @@ MachMessageData::MachMessageData(void *dataBufToCopy, size_t sizeToCopy) {
     memcpy(this->buffer, dataBufToCopy, sizeToCopy);
 }
 
+MachMessageData::MachMessageData(const MachMessageData &newData)
+{
+    // TODO: Who free the data here?
+    this->buffer = newData.getBuffer();
+    this->bufferSize = newData.getBufferSize();
+}
+
 unsigned char *MachMessageData::getBuffer() const
 {
     return buffer;

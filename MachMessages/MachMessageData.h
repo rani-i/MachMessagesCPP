@@ -10,6 +10,7 @@
 class MachMessageData {
 public:
     MachMessageData(void* dataBufToCopy, size_t sizeToCopy);
+    MachMessageData(const MachMessageData& newData);
 
     unsigned char *getBuffer() const;
 

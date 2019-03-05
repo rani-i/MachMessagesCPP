@@ -19,7 +19,6 @@ void MachService::setupMachService()
 // Based on the PoC - https://github.com/rani-i/bluetoothdPoC/blob/master/bluetoothdPoC/main.m
 void MachService::playground()
 {
-
-    MachMessage machMessage = MachMessage(*this->machConnection, 3+0xFA300, 0x113);
+    MachMessage machMessage = MachMessage(3+0xFA300, 0x113);
 
 }

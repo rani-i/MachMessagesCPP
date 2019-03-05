@@ -7,7 +7,7 @@
 #import <mach/mach.h>
 
 #define MACH_MODULE "MACH_MESSAGE"
-MachMessage::MachMessage(MachConnection& machConnection, mach_msg_id_t msgId, mach_msg_bits_t msgBits) : machConnection(machConnection)
+MachMessage::MachMessage(mach_msg_id_t msgId, mach_msg_bits_t msgBits)
 {
     this->machMessage = new mach_msg_header_t();
     this->machMessage->msgh_id = msgId;
@@ -16,25 +16,11 @@ MachMessage::MachMessage(MachConnection& machConnection, mach_msg_id_t msgId, ma
     this->msgDataList = MachMessageDataList();
 }
 
-void MachMessage::setLocalPort(MachPort& machPort)
-{
-    this->machMessage->msgh_local_port = mach_port_t(this->machConnection.getLocalPort());
-}
-
-void MachMessage::setRemotePort(MachPort& machPort)
-{
-    this->machMessage->msgh_remote_port = mach_port_t(this->machConnection.getServicePort());
-}
 
 
 const mach_msg_header_t *MachMessage::getMachMessage() const
 {
     return machMessage;
-}
-
-const MachPort& MachMessage::getRemotePort() const
-{
-    return this->machConnection.getServicePort();
 }
 
 bool MachMessage::isComplex()
@@ -68,40 +54,20 @@ void MachMessage::addData(MachMessageData& msgData)
     this->msgDataList.push_front(msgData);
 }
 
-void MachMessage::addRemotePortRight(mach_msg_type_name_t typeName)
-{
-    this->machConnection.getServicePort().InsertRight(typeName);
-}
-
-
-void MachMessage::addLocalPortRight(mach_msg_type_name_t typeName)
-{
-    this->machConnection.getLocalPort().InsertRight(typeName);
-}
-
 
 mach_msg_return_t MachMessage::sendMessage(MachConnection &machConnection)
 {
     kern_return_t ret;
-    this->setRemotePort(machConnection.getServicePort());
-    this->setLocalPort(machConnection.getLocalPort());
-    this->addLocalPortRight(MACH_MSG_TYPE_MAKE_SEND);
+
+    MachPort localPort = machConnection.getLocalPort();
+    localPort.InsertRight(MACH_MSG_TYPE_MAKE_SEND);
+
+    this->machMessage->msgh_remote_port = machConnection.getServicePort();
+    this->machMessage->msgh_local_port = localPort;
     mach_msg_header_t * mach_msg_header = this->buildMachMessage();
 
     DEBUG_LOG("Sending Mach Message 0x%x", mach_msg_header->msgh_size);
-    typedef struct retMessage_t {
-            mach_msg_header_t hdr;
-            mach_msg_body_t body;
-            mach_msg_port_descriptor_t port;
-            mach_msg_ool_descriptor64_t ool;
-            int a1;
-            int a2;
-            int size;
-            long a3;
-        } retMessage;
 
-
-    retMessage* rMg = (retMessage*) mach_msg_header;
     ret = mach_msg(mach_msg_header, MACH_SEND_MSG, mach_msg_header->msgh_size,
                    0x00, MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
 
@@ -115,9 +81,9 @@ mach_msg_return_t MachMessage::sendMessage(MachConnection &machConnection)
 mach_msg_return_t MachMessage::recvMessage(MachConnection &machConnection)
 {
     kern_return_t ret;
-    this->setRemotePort(machConnection.getServicePort());
-    this->setLocalPort(machConnection.getLocalPort());
 
+    this->machMessage->msgh_local_port = machConnection.getLocalPort();
+    this->machMessage->msgh_remote_port = machConnection.getServicePort();
     
     mach_msg_header_t * mach_msg_header = this->buildMachMessage();
     DEBUG_LOG("Receiving Mach Message 0x%x", mach_msg_header->msgh_size);
@@ -188,11 +154,6 @@ mach_msg_size_t MachMessage::calculateMessageSize()
     return msgSize;
 }
 
-const MachPort& MachMessage::getLocalPort()
-{
-    return this->machConnection.getLocalPort();
-}
-
 MachMessageDataList& MachMessage::getMessageDataList()
 {
     return this->msgDataList;
@@ -214,5 +175,10 @@ void MachMessage::parseMessageReceived()
     else{
         throw MachMessageWasNotReceived();
     }
+}
+
+void MachMessage::AddPortRight(MachPort &machPort, mach_msg_type_name_t typeName)
+{
+    machPort.InsertRight(typeName);
 }
 

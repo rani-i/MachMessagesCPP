@@ -8,7 +8,7 @@
 
 
 MachMessageComplex::MachMessageComplex(MachConnection& machConnection, mach_msg_id_t msgId,
-                                       mach_msg_bits_t msgBits) : MachMessage(machConnection, msgId, msgBits),
+                                       mach_msg_bits_t msgBits) : MachMessage(msgId, msgBits),
                                        msgDescriptors(MachMessageDescriptorList()){
 
     if(!MACH_MSGH_BITS_IS_COMPLEX(msgBits))
